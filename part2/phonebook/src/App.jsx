@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
+import Notification from './components/Notification'
 import {
   createPerson,
   deletePerson,
@@ -16,6 +17,8 @@ function App() {
   const [newPhoneNumber, setNewPhoneNumber] = useState('')
   const [showAll, setShowAll] = useState(true)
   const [nameToShow, setNameToShow] = useState('')
+  const [message, setMessage] = useState(null)
+  const [error, setError] = useState(false)
 
   useEffect(() => {
     getPersons().then((persons) => {
@@ -25,6 +28,7 @@ function App() {
 
   const handleAddPerson = (event) => {
     event.preventDefault()
+
     if (!newName) return
     if (persons.some((person) => person.name === newName)) {
       const confirm = window.confirm(
@@ -34,15 +38,33 @@ function App() {
       if (confirm) {
         const person = persons.find((person) => person.name === newName)
         const newPerson = { ...person, number: newPhoneNumber }
-        const { id } = newPerson
+        const { id, name } = newPerson
 
-        updatePerson({ id, newPerson }).then((newPerson) => {
-          setPersons(
-            persons.map((person) =>
-              person.id !== newPerson.id ? person : newPerson,
-            ),
-          )
-        })
+        updatePerson({ id, newPerson })
+          .then((newPerson) => {
+            setPersons(
+              persons.map((person) =>
+                person.id !== newPerson.id ? person : newPerson,
+              ),
+            )
+
+            setMessage(`Updated ${newPerson.name}`)
+
+            setTimeout(() => {
+              setMessage(null)
+            }, 5000)
+          })
+          .catch((_) => {
+            setError(true)
+            setMessage(
+              `Information of ${name} has already been removed from server`,
+            )
+
+            setTimeout(() => {
+              setError(false)
+              setMessage(null)
+            }, 5000)
+          })
       }
 
       setNewName('')
@@ -59,6 +81,11 @@ function App() {
       setPersons(persons.concat(person))
       setNewName('')
       setNewPhoneNumber('')
+      setMessage(`Added ${person.name}`)
+
+      setTimeout(() => {
+        setMessage(null)
+      }, 5000)
     })
   }
 
@@ -97,6 +124,7 @@ function App() {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} error={error} />
       <Filter
         nameToShow={nameToShow}
         handlePersonFilterChange={handlePersonFilterChange}

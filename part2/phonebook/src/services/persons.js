@@ -15,7 +15,7 @@ const deletePerson = ({ id }) => {
 
 const updatePerson = ({ id, newPerson }) => {
   return axios
-    .put(`http://localhost:3001/persons/${id}`, newPerson)
+    .put(`${baseUrl}/${id}`, newPerson)
     .then((response) => response.data)
 }
 

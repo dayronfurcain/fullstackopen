@@ -54,11 +54,9 @@ function App() {
               setMessage(null)
             }, 5000)
           })
-          .catch(() => {
+          .catch((error) => {
             setError(true)
-            setMessage(
-              `Information of ${name} has already been removed from server`,
-            )
+            setMessage(error.response.data.error)
 
             setTimeout(() => {
               setError(false)
@@ -77,16 +75,26 @@ function App() {
       number: newPhoneNumber,
     }
 
-    createPerson({ newPerson }).then((person) => {
-      setPersons(persons.concat(person))
-      setNewName('')
-      setNewPhoneNumber('')
-      setMessage(`Added ${person.name}`)
+    createPerson({ newPerson })
+      .then((person) => {
+        setPersons(persons.concat(person))
+        setNewName('')
+        setNewPhoneNumber('')
+        setMessage(`Added ${person.name}`)
 
-      setTimeout(() => {
-        setMessage(null)
-      }, 5000)
-    })
+        setTimeout(() => {
+          setMessage(null)
+        }, 5000)
+      })
+      .catch((error) => {
+        setError(true)
+        setMessage(error.response.data.error)
+
+        setTimeout(() => {
+          setError(false)
+          setMessage(null)
+        }, 5000)
+      })
   }
 
   const handleDeletePerson = ({ id, name }) => {

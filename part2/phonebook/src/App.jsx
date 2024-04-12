@@ -48,13 +48,13 @@ function App() {
               ),
             )
 
-            setMessage(`Updated ${newPerson.name}`)
+            setMessage(`Updated ${name}`)
 
             setTimeout(() => {
               setMessage(null)
             }, 5000)
           })
-          .catch((_) => {
+          .catch(() => {
             setError(true)
             setMessage(
               `Information of ${name} has already been removed from server`,
@@ -92,9 +92,13 @@ function App() {
   const handleDeletePerson = ({ id, name }) => {
     const confirm = window.confirm(`Delete ${name} ?`)
     if (confirm) {
-      deletePerson({ id }).then((person) => {
-        const { id } = person
+      deletePerson({ id }).then(() => {
         setPersons(persons.filter((person) => person.id !== id))
+        setMessage(`Deleted ID ${id}`)
+
+        setTimeout(() => {
+          setMessage(null)
+        }, 5000)
       })
     }
   }
